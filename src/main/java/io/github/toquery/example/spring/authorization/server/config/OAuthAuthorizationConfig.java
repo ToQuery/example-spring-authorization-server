@@ -1,10 +1,11 @@
 package io.github.toquery.example.spring.authorization.server.config;
 
+import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import io.github.toquery.example.spring.authorization.server.jose.Jwks;
 import io.github.toquery.example.spring.authorization.server.properties.OAuthAuthorizationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -101,7 +102,11 @@ public class OAuthAuthorizationConfig {
 
     @Bean
     public JWKSource<SecurityContext> jwkSource() {
-        JWK jwk = Jwks.generateRsa();
+        JWK jwk = new RSAKey.Builder(authAuthorizationProperties.getPublicKey())
+                .privateKey(authAuthorizationProperties.getPrivateKey())
+                .algorithm(Algorithm.parse("RS256"))
+                .keyID(authAuthorizationProperties.getKeyId())
+                .build();
         JWKSet jwkSet = new JWKSet(jwk);
         return (jwkSelector, securityContext) -> {
             return jwkSelector.select(jwkSet);

@@ -16,6 +16,9 @@ spring:
     active: dev
   application:
     name: example-spring-authorization-server
-
-
+app:
+  oauth:
+    issuer: http://localhost:8080/
+    private-key: classpath:jwts/rsa_private.isa
+    public-key: classpath:jwts/rsa_public.isa
 

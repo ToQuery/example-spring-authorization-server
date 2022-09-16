@@ -1,4 +1,4 @@
-package io.github.toquery.example.spring.authorization.server.jose;
+package io.github.toquery.example.spring.authorization.server;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
