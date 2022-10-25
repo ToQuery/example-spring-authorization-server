@@ -35,7 +35,7 @@ spring:
 
 app:
   oauth:
-    issuer: http://localhost:8080
+    issuer: http://127.0.0.1:8080
     private-key: classpath:jwts/rsa_private.isa
     public-key: classpath:jwts/rsa_public.isa
 

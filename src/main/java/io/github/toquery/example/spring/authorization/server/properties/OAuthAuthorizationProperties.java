@@ -15,7 +15,7 @@ import java.security.interfaces.RSAPublicKey;
 )
 public class OAuthAuthorizationProperties {
 
-    private String issuer = "http://localhost:8080";
+    private String issuer = "http://127.0.0.1:8080";
 
     private String keyId = "123456";
 
