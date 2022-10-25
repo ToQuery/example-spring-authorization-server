@@ -2,12 +2,26 @@ logging:
   level:
     root: INFO
     org.springframework.web: INFO
-    org.springframework.security: INFO
-    org.springframework.security.oauth2: INFO
+    org.springframework.security: trace
+    org.springframework.security.oauth2: trace
 #    org.springframework.boot.autoconfigure: DEBUG
 
 server:
   shutdown: graceful
+
+management:
+  server:
+    port: 0
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: ${spring.application.name}
 
 spring:
   lifecycle:
@@ -16,9 +30,12 @@ spring:
     active: dev
   application:
     name: example-spring-authorization-server
+#  main:
+#    allow-bean-definition-overriding: true
+
 app:
   oauth:
-    issuer: http://localhost:8080/
+    issuer: http://localhost:8080
     private-key: classpath:jwts/rsa_private.isa
     public-key: classpath:jwts/rsa_public.isa
 
