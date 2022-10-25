@@ -18,6 +18,7 @@
 	</properties>
 	<dependencies>
 
+		<!-- 必须保留，使用SSO登录时加载登录页面会用到 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
