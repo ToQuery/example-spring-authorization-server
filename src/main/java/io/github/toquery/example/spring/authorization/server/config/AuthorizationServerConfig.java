@@ -137,7 +137,23 @@ public class AuthorizationServerConfig {
                 .redirectUri("http://spring-security-oauth2-sso-jwt.toquery-example.com:8010/login/oauth2/code/toquery")
                 .build();
 
-        return new InMemoryRegisteredClientRepository(jwtClient, jweClient, ssoJwtClient);
+        RegisteredClient ssoJwt2Client = RegisteredClient.from(getRegisteredClient())
+                .id(UUID.randomUUID().toString())
+                .clientId("example-spring-security-oauth2-sso-jwt-2")
+                .clientName("example-spring-security-oauth2-sso-jwt-2")
+                .clientSecret("{noop}example-spring-security-oauth2-sso-jwt-2-secret")
+                .redirectUri("http://spring-security-oauth2-sso-jwt.toquery-example.com:8010/login/oauth2/code/toquery")
+                .build();
+
+        RegisteredClient ssoOpaqueTokenClient = RegisteredClient.from(getRegisteredClient())
+                .id(UUID.randomUUID().toString())
+                .clientId("example-spring-security-oauth2-sso-opaque-token")
+                .clientName("example-spring-security-oauth2-sso-opaque-token")
+                .clientSecret("{noop}example-spring-security-oauth2-sso-opaque-token-secret")
+                .redirectUri("http://spring-security-oauth2-sso-opaque-token.toquery-example.com:8020/login/oauth2/code/toquery")
+                .build();
+
+        return new InMemoryRegisteredClientRepository(jwtClient, jweClient, ssoJwtClient, ssoJwt2Client, ssoOpaqueTokenClient);
     }
 
     @Bean
