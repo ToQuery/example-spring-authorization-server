@@ -9,17 +9,35 @@ logging:
 server:
   shutdown: graceful
 
+
 management:
   server:
-    port: 0
+    port: 8081
+
   endpoints:
     web:
       exposure:
         include: '*'
+
   endpoint:
     health:
+      enabled: true
+      probes:
+        enabled: true
       show-details: always
+    info:
+      enabled: true
+
+  health:
+    livenessState: # 开启 /actuator/health/liveness
+      enabled: true
+    readinessState: # 开启 /actuator/health/readiness
+      enabled: true
+
   metrics:
+    enable:
+      jvm: true
+    use-global-registry: false
     tags:
       application: ${spring.application.name}
 
@@ -35,7 +53,6 @@ spring:
 
 app:
   oauth:
-    issuer: http://127.0.0.1:8080
-    private-key: classpath:jwts/rsa_private.isa
     public-key: classpath:jwts/rsa_public.isa
+    private-key: classpath:jwts/rsa_private.isa
 
