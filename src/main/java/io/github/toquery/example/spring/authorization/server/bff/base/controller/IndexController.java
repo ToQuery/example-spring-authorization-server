@@ -1,4 +1,4 @@
-package io.github.toquery.example.spring.authorization.server.controller;
+package io.github.toquery.example.spring.authorization.server.bff.base.controller;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RequestMapping;

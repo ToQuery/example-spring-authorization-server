@@ -8,11 +8,10 @@ logging:
 
 server:
   shutdown: graceful
+  port: 9000
 
 
 management:
-  server:
-    port: 8081
 
   endpoints:
     web:
@@ -48,8 +47,22 @@ spring:
     active: dev
   application:
     name: example-spring-authorization-server
-#  main:
-#    allow-bean-definition-overriding: true
+
+  datasource:
+    url: jdbc:mysql://${DB_MYSQL_HOST}:3306/example_spring_authorization_server?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DB_MYSQL_USER}
+    password: ${DB_MYSQL_PASSWORD}
+  jpa:
+    generate-ddl: true
+  sql:
+    init:
+      schema-locations:
+        - classpath*:org/springframework/security/oauth2/server/authorization/client/oauth2-registered-client-schema.sql
+        - classpath*:org/springframework/security/oauth2/server/authorization/oauth2-authorization-consent-schema.sql
+        - classpath*:org/springframework/security/oauth2/server/authorization/oauth2-authorization-schema.sql
+      # mode: always
+
 
 app:
   oauth:

@@ -1,6 +1,6 @@
 package io.github.toquery.example.spring.authorization.server;
 
-import io.github.toquery.example.spring.authorization.server.properties.OAuthAuthorizationProperties;
+import io.github.toquery.example.spring.authorization.server.core.properties.OAuthAuthorizationProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

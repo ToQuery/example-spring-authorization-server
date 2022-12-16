@@ -26,8 +26,8 @@ example-spring-security-jwt:example-spring-security-jwt-secret
 
 ```shell
 curl -i -X POST \
-   -H "Authorization:Basic ZXhhbXBsZS1zcHJpbmctc2VjdXJpdHktand0OmV4YW1wbGUtc3ByaW5nLXNlY3VyaXR5LWp3dC1zZWNyZXQ=" \
- 'http://localhost:8080/oauth2/token?grant_type=client_credentials'
+  -u 'example:example-secret' \
+ 'http://localhost:9000/oauth2/token?grant_type=client_credentials'
 ```
 
 ```shell

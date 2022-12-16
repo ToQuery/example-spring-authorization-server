@@ -1,4 +1,4 @@
-package io.github.toquery.example.spring.authorization.server.properties;
+package io.github.toquery.example.spring.authorization.server.core.properties;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
