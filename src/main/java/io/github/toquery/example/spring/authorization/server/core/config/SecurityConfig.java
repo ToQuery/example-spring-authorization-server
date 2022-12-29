@@ -25,13 +25,16 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+
+        http.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
+            authorizationManagerRequestMatcherRegistry.requestMatchers("/error", "/", "/actuator**").permitAll();
+            authorizationManagerRequestMatcherRegistry.anyRequest().authenticated();
+        });
+
         // Form login handles the redirect to the login page from the
         // authorization server filter chain
         http.formLogin(Customizer.withDefaults());
 
-        http.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
-            authorizationManagerRequestMatcherRegistry.requestMatchers("/actuator/**").permitAll();
-        });
 
         return http.build();
     }

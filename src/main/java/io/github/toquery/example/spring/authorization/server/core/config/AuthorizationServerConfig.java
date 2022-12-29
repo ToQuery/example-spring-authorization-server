@@ -1,5 +1,6 @@
 package io.github.toquery.example.spring.authorization.server.core.config;
 
+import com.bty.platform.oauth.authorization.utils.RSAUtils;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -13,7 +14,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
@@ -21,11 +21,11 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationConsentService;
-import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
+import org.springframework.security.oauth2.server.authorization.InMemoryOAuth2AuthorizationConsentService;
+import org.springframework.security.oauth2.server.authorization.InMemoryOAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
-import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
+import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
@@ -67,8 +67,6 @@ public class AuthorizationServerConfig {
         // 获取用户信息 Accept access tokens for User Info and/or Client Registration
         http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
 
-        http.formLogin(httpSecurityFormLoginConfigurer -> {
-        });
         return http.build();
     }
 
@@ -82,6 +80,7 @@ public class AuthorizationServerConfig {
             .authorizationGrantType(AuthorizationGrantType.PASSWORD)
             .authorizationGrantType(AuthorizationGrantType.JWT_BEARER)
             .redirectUri("http://127.0.0.1:8080/authorized")
+            .redirectUri("http://127.0.0.1:8080/admin/index")
             .scope(OidcScopes.OPENID)
             .scope(OidcScopes.PROFILE)
             .scope(OidcScopes.EMAIL)
@@ -111,7 +110,7 @@ public class AuthorizationServerConfig {
             .build();
 
     @Bean
-    public RegisteredClientRepository registeredClientRepository(JdbcTemplate jdbcTemplate) {
+    public RegisteredClientRepository registeredClientRepository() {
         RegisteredClient example = RegisteredClient.from(defaultRegisteredClient)
                 .id(UUID.randomUUID().toString())
                 .clientId("example")
@@ -152,7 +151,7 @@ public class AuthorizationServerConfig {
                 .clientId("example-spring-security-oauth2-sso-jwt")
                 .clientName("example-spring-security-oauth2-sso-jwt")
                 .clientSecret("{noop}example-spring-security-oauth2-sso-jwt-secret")
-                .redirectUri("http://spring-security-oauth2-sso-jwt.toquery-example.com:8010/login/oauth2/code/toquery")
+                .redirectUri("http://spring-security-oauth2-sso-jwt.toquery-example.com:8010/oauth2/code/toquery")
                 .build();
 
         RegisteredClient ssoJwt2Client = RegisteredClient.from(defaultRegisteredClient)
@@ -171,26 +170,18 @@ public class AuthorizationServerConfig {
                 .redirectUri("http://spring-security-oauth2-sso-opaque-token.toquery-example.com:8020/login/oauth2/code/toquery")
                 .build();
 
-        JdbcRegisteredClientRepository jdbcRegisteredClientRepository = new JdbcRegisteredClientRepository(jdbcTemplate);
+        return new InMemoryRegisteredClientRepository(example, jwtClient, jweClient, ssoJwtClient, ssoJwt2Client, ssoOpaqueTokenClient);
 
-
-//        jdbcRegisteredClientRepository.save(example);
-//        jdbcRegisteredClientRepository.save(jwtClient);
-//        jdbcRegisteredClientRepository.save(jweClient);
-//        jdbcRegisteredClientRepository.save(ssoJwtClient);
-//        jdbcRegisteredClientRepository.save(ssoJwt2Client);
-//        jdbcRegisteredClientRepository.save(ssoOpaqueTokenClient);
-        return jdbcRegisteredClientRepository;
     }
 
     @Bean
-    public OAuth2AuthorizationService authorizationService(JdbcTemplate jdbcTemplate, RegisteredClientRepository registeredClientRepository) {
-        return new JdbcOAuth2AuthorizationService(jdbcTemplate, registeredClientRepository);
+    public OAuth2AuthorizationService authorizationService() {
+        return new InMemoryOAuth2AuthorizationService();
     }
 
     @Bean
-    public OAuth2AuthorizationConsentService authorizationConsentService(JdbcTemplate jdbcTemplate, RegisteredClientRepository registeredClientRepository) {
-        return new JdbcOAuth2AuthorizationConsentService(jdbcTemplate, registeredClientRepository);
+    public OAuth2AuthorizationConsentService authorizationConsentService() {
+        return new InMemoryOAuth2AuthorizationConsentService();
     }
 
     /**
@@ -206,16 +197,14 @@ public class AuthorizationServerConfig {
      */
     @Bean
     public JWKSource<SecurityContext> jwkSource() {
-        JWK jwk = new RSAKey.Builder(authAuthorizationProperties.getPublicKey())
-                .privateKey(authAuthorizationProperties.getPrivateKey())
+        JWK jwk = new RSAKey.Builder(RSAUtils.publicKey(authAuthorizationProperties.getPublicKey()))
+                .privateKey(RSAUtils.privateKey(authAuthorizationProperties.getPrivateKey()))
+                .keyID(authAuthorizationProperties.getKeyId())
                 .keyUse(KeyUse.SIGNATURE)
                 .algorithm(JWSAlgorithm.RS256)
-                .keyID(authAuthorizationProperties.getKeyId())
                 .build();
         JWKSet jwkSet = new JWKSet(jwk);
-        return (jwkSelector, securityContext) -> {
-            return jwkSelector.select(jwkSet);
-        };
+        return (jwkSelector, securityContext) -> jwkSelector.select(jwkSet);
     }
 
     /**

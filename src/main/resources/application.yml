@@ -3,7 +3,7 @@ logging:
     root: INFO
     org.springframework.web: INFO
     org.springframework.security: trace
-    org.springframework.security.oauth2: trace
+#    org.springframework.security.oauth2: trace
 #    org.springframework.boot.autoconfigure: DEBUG
 
 server:
@@ -63,9 +63,4 @@ spring:
         - classpath*:org/springframework/security/oauth2/server/authorization/oauth2-authorization-schema.sql
       # mode: always
 
-
-app:
-  oauth:
-    public-key: classpath:jwts/rsa_public.isa
-    private-key: classpath:jwts/rsa_private.isa
 

@@ -22,18 +22,20 @@ OAuth2 认证授权服务
 
 - jwt方式
 
-example-spring-security-jwt:example-spring-security-jwt-secret
-
 ```shell
-curl -i -X POST \
+curl -s -X POST \
   -u 'example:example-secret' \
- 'http://localhost:9000/oauth2/token?grant_type=client_credentials'
+  -G -d 'grant_type=client_credentials' -d 'scope=write' \
+ 'http://localhost:9000/oauth2/token'
 ```
 
+
 ```shell
+
+
 curl -i -X GET \
-   -H "Authorization:Bearer eyJraWQiOiIxMjM0NTYiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJleGFtcGxlLXNwcmluZy1zZWN1cml0eS1qd3QiLCJhdWQiOiJleGFtcGxlLXNwcmluZy1zZWN1cml0eS1qd3QiLCJuYmYiOjE2NjM2NTYwODMsInNjb3BlIjpbInJlYWQiLCJvcGVuaWQiLCJ3cml0ZSJdLCJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3Q6ODA4MFwvIiwiZXhwIjoxNjYzNjU5NjgzLCJpYXQiOjE2NjM2NTYwODN9.H1vxnuWx_JYGUwD9MbH5zrhNvReroJCmvzRDfw6HRpqXAfBFhpPitHlnaG07I29eInXkjBDe6s5B6FEi1m2PRTD-UAT5brJy_hqEgyo1unL5HFqhGt0BB7qZtViSY7RIPBtVramETGtAg6ueekwjWoXiLrelTdcFJ7I3codXxi1sjbgGRtqr5LnUcnGtp_lHhOk4n06IvVGoPisWo3H7PtuKU3HGzoJR8RGKSwUmRDmqkF1VRAZder_-ma3p8S_teTaphpYGOpABHSz1Dd2qpCsSS2mPIVUY5VQa-8sOjXHzWROar7iHIvlr84w3YK94XFtWjATGBD13ZNWnDhiomg" \
-   'http://localhost:8090'
+   -H "Authorization:Bearer eyJraWQiOiIxMjM0NTYiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJleGFtcGxlIiwiYXVkIjoiZXhhbXBsZSIsIm5iZiI6MTY3MTI5MTc5NSwic2NvcGUiOlsid3JpdGUiXSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo5MDAwIiwiZXhwIjoxNjcxMzEzMzk1LCJpYXQiOjE2NzEyOTE3OTV9.O0UaUdxjwUaMS_okeXM-Sj8jXaYPBouPnp0N5IpBrKUjTHeLc2j1U1vWZxK-x4Ste1cXBTTxHbhHU0px7fbb77x-8LIQZzutvPDmPi_7UFy1IvTqO3YoZUZpiq4Rai8T1j9OS1frJxA5w8a4DQcccKytk5FrQe8BaH2QkEDV3pJfTpBbmtJIsO9Jd0o0_BzwORHsglXWKsrebAH5I9TJRYBj2Zmaj3zNkmLSJhnVcr2Q9iBCtN3rjfz34xUrNfl2jScRFVUNBk1taA4ugtFBhSoPWEYHkZI6PZBifSfgAM-qGl_40FyjweaKYUcTGd1XcKE2uiMxG8DrIoVsyro7EQ" \
+   'http://localhost:8070'
 ```
 
 - opaque方式
@@ -98,3 +100,7 @@ curl -i -X GET \
    -H "Authorization:Bearer eyJraWQiOiIxMjM0NTYiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJleGFtcGxlLXNwcmluZy1zZWN1cml0eS1qd3QiLCJhdWQiOiJleGFtcGxlLXNwcmluZy1zZWN1cml0eS1qd3QiLCJuYmYiOjE2NjM2NTYwODMsInNjb3BlIjpbInJlYWQiLCJvcGVuaWQiLCJ3cml0ZSJdLCJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3Q6ODA4MFwvIiwiZXhwIjoxNjYzNjU5NjgzLCJpYXQiOjE2NjM2NTYwODN9.H1vxnuWx_JYGUwD9MbH5zrhNvReroJCmvzRDfw6HRpqXAfBFhpPitHlnaG07I29eInXkjBDe6s5B6FEi1m2PRTD-UAT5brJy_hqEgyo1unL5HFqhGt0BB7qZtViSY7RIPBtVramETGtAg6ueekwjWoXiLrelTdcFJ7I3codXxi1sjbgGRtqr5LnUcnGtp_lHhOk4n06IvVGoPisWo3H7PtuKU3HGzoJR8RGKSwUmRDmqkF1VRAZder_-ma3p8S_teTaphpYGOpABHSz1Dd2qpCsSS2mPIVUY5VQa-8sOjXHzWROar7iHIvlr84w3YK94XFtWjATGBD13ZNWnDhiomg" \
    'http://localhost:8090'
 ```
+
+## 问题
+
+- https://stackoverflow.com/questions/39756748/spring-oauth-authorization-server-requires-scope
