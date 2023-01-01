@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.0.0</version>
+		<version>3.0.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>io.github.toquery</groupId>
@@ -17,7 +17,6 @@
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
-
 		<!-- 必须保留，使用SSO登录时加载登录页面会用到 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -30,6 +29,11 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-client</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-oauth2-authorization-server</artifactId>
 			<version>1.0.0</version>
@@ -38,6 +42,10 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
 		</dependency>
 
 		<dependency>
@@ -51,6 +59,12 @@
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
+
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+		</dependency>
+
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
