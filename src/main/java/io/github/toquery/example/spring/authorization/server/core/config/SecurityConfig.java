@@ -1,16 +1,10 @@
 package io.github.toquery.example.spring.authorization.server.core.config;
 
-import io.github.toquery.example.spring.authorization.server.core.oauth2.federated.identity.FederatedIdentityConfigurer;
-import io.github.toquery.example.spring.authorization.server.core.oauth2.federated.identity.UserRepositoryOAuth2UserHandler;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -37,7 +31,7 @@ public class SecurityConfig {
 
 
         http.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
-            authorizationManagerRequestMatcherRegistry.requestMatchers("/error", "/", "/actuator**").permitAll();
+            authorizationManagerRequestMatcherRegistry.requestMatchers("/error", "/", "/actuator/*").permitAll();
             authorizationManagerRequestMatcherRegistry.anyRequest().authenticated();
         });
 

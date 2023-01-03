@@ -1,4 +1,4 @@
-package io.github.toquery.example.spring.authorization.server.core.endpoint;
+package io.github.toquery.example.spring.authorization.server.bff.admin.test.controller;
 
 import io.github.toquery.example.spring.authorization.server.core.utils.AuthenticationUtils;
 import lombok.SneakyThrows;
@@ -16,8 +16,8 @@ import java.util.Map;
  *
  */
 @RestController
-@RequestMapping
-public class IndexEndpoint {
+@RequestMapping("/admin/test")
+public class AdminTestController {
 
     @SneakyThrows
     @ResponseBody
@@ -28,5 +28,4 @@ public class IndexEndpoint {
     ) {
         return AuthenticationUtils.authenticationInfo(this.getClass().getSimpleName(), authentication, oauth2User, null);
     }
-
 }

@@ -11,6 +11,7 @@ import com.nimbusds.jose.proc.SecurityContext;
 import io.github.toquery.example.spring.authorization.server.core.oauth2.authentication.OAuth2ResourceOwnerPasswordAuthenticationConverter;
 import io.github.toquery.example.spring.authorization.server.core.oauth2.authentication.OAuth2ResourceOwnerPasswordAuthenticationProvider;
 import io.github.toquery.example.spring.authorization.server.core.properties.OAuthAuthorizationProperties;
+import io.github.toquery.example.spring.authorization.server.core.utils.OAuth2ConfigurerUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +21,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
+import org.springframework.security.oauth2.core.OAuth2Token;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.authorization.InMemoryOAuth2AuthorizationConsentService;
 import org.springframework.security.oauth2.server.authorization.InMemoryOAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
@@ -28,6 +32,7 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
+import org.springframework.security.oauth2.server.authorization.token.JwtGenerator;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
 import org.springframework.security.oauth2.server.authorization.web.authentication.DelegatingAuthenticationConverter;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2AuthorizationCodeAuthenticationConverter;
@@ -60,6 +65,10 @@ public class AuthorizationServerConfig {
 
         // 获取默认设置项
         OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = http.getConfigurer(OAuth2AuthorizationServerConfigurer.class);
+
+        // Enable OpenID Connect 1.0
+        authorizationServerConfigurer.oidc(Customizer.withDefaults());
+
         // 自定义 token 接口，支持 password 方式获取token
         authorizationServerConfigurer.tokenEndpoint((tokenEndpoint) -> {
             // 委托模式认证转换器
@@ -75,30 +84,20 @@ public class AuthorizationServerConfig {
         http.apply(authorizationServerConfigurer);
 
 
-//        authorizationServerConfigurer.authorizationEndpoint(authorizationEndpoint -> authorizationEndpoint.consentPage(CUSTOM_CONSENT_PAGE_URI));
-
-
-//        RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
-//
-//        http.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
-//            authorizationManagerRequestMatcherRegistry.requestMatchers(endpointsMatcher).permitAll();
-//        });
-//
-//        http.csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher));
-
 //        SSO 集成github Google 账号使用
 //        FederatedIdentityConfigurer federatedIdentityConfigurer = new FederatedIdentityConfigurer();
 //        http.apply(federatedIdentityConfigurer);
 
 
-        // Redirect to the login page when not authenticated from the
-        // authorization endpoint
-        http.exceptionHandling((exceptions) -> exceptions
-                .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
-        );
-
         // 获取用户信息 Accept access tokens for User Info and/or Client Registration
         http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
+
+        // Redirect to the login page when not authenticated from the
+        // authorization endpoint
+//        http.exceptionHandling((exceptionHandlingConfigurer) -> {
+//            exceptionHandlingConfigurer.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"));
+//        });
+
 
         SecurityFilterChain securityFilterChain = http.formLogin(Customizer.withDefaults()).build();
 
@@ -112,17 +111,16 @@ public class AuthorizationServerConfig {
         return securityFilterChain;
     }
 
-    private void addCustomOAuth2ResourceOwnerPasswordAuthenticationProvider(HttpSecurity http) {
+    private void addCustomOAuth2ResourceOwnerPasswordAuthenticationProvider(HttpSecurity httpSecurity) {
 
-        AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
-        OAuth2AuthorizationService authorizationService = http.getSharedObject(OAuth2AuthorizationService.class);
-        OAuth2TokenGenerator tokenGenerator = http.getSharedObject(OAuth2TokenGenerator.class);
+        AuthenticationManager authenticationManager = OAuth2ConfigurerUtils.getAuthenticationManager(httpSecurity);
+        OAuth2AuthorizationService authorizationService = OAuth2ConfigurerUtils.getAuthorizationService(httpSecurity);
+        OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator = OAuth2ConfigurerUtils.getTokenGenerator(httpSecurity);
 
-        OAuth2ResourceOwnerPasswordAuthenticationProvider resourceOwnerPasswordAuthenticationProvider =
-                new OAuth2ResourceOwnerPasswordAuthenticationProvider(authenticationManager, authorizationService, tokenGenerator);
+        OAuth2ResourceOwnerPasswordAuthenticationProvider resourceOwnerPasswordAuthenticationProvider = new OAuth2ResourceOwnerPasswordAuthenticationProvider(authenticationManager, authorizationService, tokenGenerator);
 
         // This will add new authentication provider in the list of existing authentication providers.
-        http.authenticationProvider(resourceOwnerPasswordAuthenticationProvider);
+        httpSecurity.authenticationProvider(resourceOwnerPasswordAuthenticationProvider);
 
     }
 
@@ -159,6 +157,19 @@ public class AuthorizationServerConfig {
         JWKSet jwkSet = new JWKSet(jwk);
         return (jwkSelector, securityContext) -> jwkSelector.select(jwkSet);
     }
+
+    @Bean
+    public JwtEncoder jwtEncoder(JWKSource<SecurityContext> jwkSource){
+        return new NimbusJwtEncoder(jwkSource);
+    }
+
+    /**
+     * <a href="https://github.com/spring-projects/spring-authorization-server/issues/500">...</a>
+     */
+//    @Bean
+//    public OAuth2TokenGenerator<? extends OAuth2Token> JwtGenerator(JwtEncoder jwtEncoder) {
+//        return new JwtGenerator(jwtEncoder);
+//    }
 
     /**
      * 设置暴露的 Endpoint 地址信息

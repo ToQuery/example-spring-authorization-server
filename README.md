@@ -56,13 +56,17 @@ curl -i -X GET \
 
 ### PASSWORD 方式认证
 
-
 ```shell
 curl -i -X POST \
   -u 'example:example-secret' \
-  'http://localhost:9000/oauth2/token?grant_type=password&username=admin&password=123456&client_id=example&client_secret=example-secret'
-```
+  'http://localhost:9000/oauth2/token' \
+  -d 'grant_type=password' \
+  -d 'username=admin' \
+  -d 'password=123456' \
+  -d 'client_id=example' \
+  -d 'client_secret=example-secret'
 
+```
 
 ### AUTHORIZATION_CODE 方式认证
 
