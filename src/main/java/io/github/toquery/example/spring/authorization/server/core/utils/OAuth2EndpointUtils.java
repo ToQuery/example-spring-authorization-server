@@ -1,4 +1,4 @@
-package io.github.toquery.example.spring.authorization.server.core.oauth2.authentication;
+package io.github.toquery.example.spring.authorization.server.core.utils;
 
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class OAuth2EndpointUtils {
 
-	static final String ACCESS_TOKEN_REQUEST_ERROR_URI = "https://datatracker.ietf.org/doc/html/rfc6749#section-5.2";
+	public static final String ACCESS_TOKEN_REQUEST_ERROR_URI = "https://datatracker.ietf.org/doc/html/rfc6749#section-5.2";
 
 	private OAuth2EndpointUtils() {
 	}

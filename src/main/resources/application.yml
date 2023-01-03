@@ -3,6 +3,7 @@ logging:
     root: INFO
     org.springframework.web: INFO
     org.springframework.security: trace
+    org.springframework.boot.diagnostics: trace
 #    org.springframework.security.oauth2: trace
 #    org.springframework.boot.autoconfigure: DEBUG
 
@@ -63,4 +64,19 @@ spring:
         - classpath*:org/springframework/security/oauth2/server/authorization/oauth2-authorization-schema.sql
       # mode: always
 
+  security:
+    oauth2:
+      client:
+        provider:
+          github:
+            user-name-attribute: login
+        registration:
+          github-idp:
+            client-id: ${OAUTH_GITHUB_CLIENT_ID}
+            client-name: Sign in with GitHub
+            client-secret: ${OAUTH_GITHUB_CLIENT_SECRET}
+            provider: github
+            scope:
+            - user:email
+            - read:user
 
