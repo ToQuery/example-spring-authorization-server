@@ -19,10 +19,6 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
-//    @Bean
-//    public WebSecurityCustomizer webSecurityCustomizer() {
-//        return (web) -> web.ignoring().requestMatchers("/webjars/**", "/image/**");
-//    }
 
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -31,7 +27,10 @@ public class SecurityConfig {
 
 
         http.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
-            authorizationManagerRequestMatcherRegistry.requestMatchers("/error", "/", "/actuator/*").permitAll();
+            // 白名单
+            authorizationManagerRequestMatcherRegistry.requestMatchers("/", "/error").permitAll();
+            authorizationManagerRequestMatcherRegistry.requestMatchers("/actuator", "/actuator/*").permitAll();
+
             authorizationManagerRequestMatcherRegistry.anyRequest().authenticated();
         });
 

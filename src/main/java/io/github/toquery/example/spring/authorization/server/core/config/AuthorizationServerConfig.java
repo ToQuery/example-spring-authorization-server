@@ -6,11 +6,12 @@ import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import io.github.toquery.example.spring.authorization.server.core.oauth2.authentication.OAuth2ResourceOwnerPasswordAuthenticationConverter;
 import io.github.toquery.example.spring.authorization.server.core.oauth2.authentication.OAuth2ResourceOwnerPasswordAuthenticationProvider;
-import io.github.toquery.example.spring.authorization.server.core.properties.OAuthAuthorizationProperties;
+import io.github.toquery.example.spring.authorization.server.core.properties.AppJwtProperties;
 import io.github.toquery.example.spring.authorization.server.core.utils.OAuth2ConfigurerUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -32,7 +33,6 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
-import org.springframework.security.oauth2.server.authorization.token.JwtGenerator;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
 import org.springframework.security.oauth2.server.authorization.web.authentication.DelegatingAuthenticationConverter;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2AuthorizationCodeAuthenticationConverter;
@@ -40,7 +40,6 @@ import org.springframework.security.oauth2.server.authorization.web.authenticati
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2RefreshTokenAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationConverter;
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
 import java.util.Arrays;
 
@@ -54,7 +53,7 @@ public class AuthorizationServerConfig {
 
     private static final String CUSTOM_CONSENT_PAGE_URI = "/oauth2/consent";
 
-    private final OAuthAuthorizationProperties authAuthorizationProperties;
+    private final AppJwtProperties authAuthorizationProperties;
 
 
     @Bean
@@ -155,7 +154,7 @@ public class AuthorizationServerConfig {
                 .algorithm(JWSAlgorithm.RS256)
                 .build();
         JWKSet jwkSet = new JWKSet(jwk);
-        return (jwkSelector, securityContext) -> jwkSelector.select(jwkSet);
+        return new ImmutableJWKSet<>(jwkSet);
     }
 
     @Bean

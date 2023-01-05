@@ -10,9 +10,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Slf4j
 @Data
 @ConfigurationProperties(
-        prefix = "app.oauth"
+        prefix = "app.jwt"
 )
-public class OAuthAuthorizationProperties {
+public class AppJwtProperties {
 
     private String keyId = "123456";
 
