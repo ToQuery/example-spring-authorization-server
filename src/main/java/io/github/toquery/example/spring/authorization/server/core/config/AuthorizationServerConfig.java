@@ -40,6 +40,7 @@ import org.springframework.security.oauth2.server.authorization.web.authenticati
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2RefreshTokenAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationConverter;
+import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.Arrays;
 
@@ -58,7 +59,10 @@ public class AuthorizationServerConfig {
 
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
-    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain authorizationServerSecurityFilterChain(
+            HttpSecurity http,
+            CorsConfiguration corsConfiguration
+            ) throws Exception {
         // 配置默认设置
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
 
@@ -66,7 +70,8 @@ public class AuthorizationServerConfig {
         OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = http.getConfigurer(OAuth2AuthorizationServerConfigurer.class);
 
         // Enable OpenID Connect 1.0
-        authorizationServerConfigurer.oidc(Customizer.withDefaults());
+        authorizationServerConfigurer.oidc(oidcConfigurer -> {
+        });
 
         // 自定义 token 接口，支持 password 方式获取token
         authorizationServerConfigurer.tokenEndpoint((tokenEndpoint) -> {
@@ -82,6 +87,13 @@ public class AuthorizationServerConfig {
         // 应用 OAuth2AuthorizationServer 配置
         http.apply(authorizationServerConfigurer);
 
+        http.cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(exchange -> corsConfiguration));
+
+        http.headers(httpSecurityHeadersConfigurer -> {
+            httpSecurityHeadersConfigurer.frameOptions(frameOptionsConfig -> {
+                frameOptionsConfig.disable();
+            });
+        });
 
 //        SSO 集成github Google 账号使用
 //        FederatedIdentityConfigurer federatedIdentityConfigurer = new FederatedIdentityConfigurer();

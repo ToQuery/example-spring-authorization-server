@@ -80,6 +80,9 @@ public class AuthorizationRegisteredClientConfig {
                 .clientId("example")
                 .clientName("example")
                 .clientSecret("{noop}example-secret")
+                .redirectUri("http://127.0.0.1:1234/oidc-client/sample.html")
+                .redirectUri("http://127.0.0.1:1234/code-flow-duendesoftware/sample.html")
+                .redirectUri("http://127.0.0.1:1234/code-flow-duendesoftware/sample-silent.html")
                 .build();
 
         RegisteredClient jwtClient = RegisteredClient.from(defaultRegisteredClient)
