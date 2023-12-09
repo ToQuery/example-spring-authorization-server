@@ -27,7 +27,7 @@ curl -s -X POST \
  'http://localhost:9000/oauth2/token' \
   -u 'example:example-secret' \
   -d 'grant_type=client_credentials' \
-  -d 'scope=write' | jq -r .access_token
+  -d 'scope=write'
 ```
 
 

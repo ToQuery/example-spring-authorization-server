@@ -54,28 +54,13 @@ public class OAuth2TokenSettingsImpl implements OAuth2TokenSettings {
 
 		if (StringUtils.hasText(tokenTimeUnit)) {
 
-			switch (tokenTimeUnit.toUpperCase()) {
-			case "M":
-			case "MINUTE":
-			case "MINUTES":
-				duration = Duration.ofMinutes(tokenTime);
-				break;
-			case "H":
-			case "HOUR":
-			case "HOURS":
-				duration = Duration.ofHours(tokenTime);
-				break;
-			case "D":
-			case "DAY":
-			case "DAYS":
-				duration = Duration.ofDays(tokenTime);
-				break;
-			case "W":
-			case "WEEK":
-			case "WEEKS":
-				duration = Duration.of(tokenTime, ChronoUnit.WEEKS);
-				break;
-			}
+            duration = switch (tokenTimeUnit.toUpperCase()) {
+                case "M", "MINUTE", "MINUTES" -> Duration.ofMinutes(tokenTime);
+                case "H", "HOUR", "HOURS" -> Duration.ofHours(tokenTime);
+                case "D", "DAY", "DAYS" -> Duration.ofDays(tokenTime);
+                case "W", "WEEK", "WEEKS" -> Duration.of(tokenTime, ChronoUnit.WEEKS);
+                default -> duration;
+            };
 		}
 
 		return duration;

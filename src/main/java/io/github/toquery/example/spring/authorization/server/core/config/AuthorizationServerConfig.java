@@ -21,6 +21,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.oauth2.core.OAuth2Token;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -70,8 +71,7 @@ public class AuthorizationServerConfig {
         OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = http.getConfigurer(OAuth2AuthorizationServerConfigurer.class);
 
         // Enable OpenID Connect 1.0
-        authorizationServerConfigurer.oidc(oidcConfigurer -> {
-        });
+        authorizationServerConfigurer.oidc(Customizer.withDefaults());
 
         // 自定义 token 接口，支持 password 方式获取token
         authorizationServerConfigurer.tokenEndpoint((tokenEndpoint) -> {
@@ -85,14 +85,12 @@ public class AuthorizationServerConfig {
         });
 
         // 应用 OAuth2AuthorizationServer 配置
-        http.apply(authorizationServerConfigurer);
+        // http.apply(authorizationServerConfigurer);
 
         http.cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(exchange -> corsConfiguration));
 
         http.headers(httpSecurityHeadersConfigurer -> {
-            httpSecurityHeadersConfigurer.frameOptions(frameOptionsConfig -> {
-                frameOptionsConfig.disable();
-            });
+            httpSecurityHeadersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable);
         });
 
 //        SSO 集成github Google 账号使用
@@ -101,7 +99,7 @@ public class AuthorizationServerConfig {
 
 
         // 获取用户信息 Accept access tokens for User Info and/or Client Registration
-        http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
+        http.oauth2ResourceServer((resourceServer) -> resourceServer .jwt(Customizer.withDefaults()));
 
         // Redirect to the login page when not authenticated from the
         // authorization endpoint

@@ -1,0 +1,8 @@
+services:
+  postgres:
+    image: 'postgres:16'
+    ports:
+      - '5432'
+    environment:
+      - 'POSTGRES_DB=example_spring_authorization_server'
+      - 'POSTGRES_PASSWORD=postgres'
