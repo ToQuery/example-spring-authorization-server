@@ -1,7 +1,7 @@
 # example-spring-authorization-server
 OAuth2 认证授权服务
 
-
+https://juejin.cn/post/7290729997215170615?searchId=202401252330058987276A1F0FB3CB148F
 
 ## 暴露地址
 
@@ -39,7 +39,7 @@ curl -i -X GET \
 
 - opaque方式
 
-example-spring-security-opaque:example-spring-security-opaque-secret
+example-spring-security-oauth2-opaque-token:example-spring-security-oauth2-opaque-token-secret
 
 ```shell
 curl -i -X POST \

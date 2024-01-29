@@ -44,19 +44,18 @@ management:
       application: ${spring.application.name}
 
 spring:
-  lifecycle:
-    timeout-per-shutdown-phase: 30s
-  profiles:
-    active: dev
-  application:
-    name: example-spring-authorization-server
-  jpa:
-    show-sql: true
-    generate-ddl: true
-
   docker:
     compose:
       enabled: false
+  application:
+    name: example-spring-authorization-server
+#  profiles:
+#    active: dev
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+  jpa:
+    show-sql: true
+    generate-ddl: true
 
   sql:
     init:
@@ -69,7 +68,6 @@ spring:
 
   security:
     oauth2:
-
       authorizationserver:
         client:
           oidc-client:

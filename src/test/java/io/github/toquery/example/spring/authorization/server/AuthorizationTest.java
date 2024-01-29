@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.oidc.OidcScopes;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -29,6 +30,7 @@ public class AuthorizationTest {
                         MockMvcRequestBuilders
                                 .post("/oauth2/token")
                                 .param("grant_type", AuthorizationGrantType.CLIENT_CREDENTIALS.getValue())
+                                .param("scope", OidcScopes.PROFILE)
                                 .with(SecurityMockMvcRequestPostProcessors.httpBasic("example", "example-secret"))
                 )
                 .andDo(MockMvcResultHandlers.print())

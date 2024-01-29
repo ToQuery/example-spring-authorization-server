@@ -99,7 +99,7 @@ public class AuthorizationServerConfig {
 
 
         // 获取用户信息 Accept access tokens for User Info and/or Client Registration
-        http.oauth2ResourceServer((resourceServer) -> resourceServer .jwt(Customizer.withDefaults()));
+        http.oauth2ResourceServer((resourceServer) -> resourceServer.jwt(Customizer.withDefaults()));
 
         // Redirect to the login page when not authenticated from the
         // authorization endpoint
