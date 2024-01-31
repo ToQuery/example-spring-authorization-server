@@ -1,5 +1,6 @@
 package io.github.toquery.example.spring.authorization.server.core.oauth2.federated.identity;
 
+import lombok.Setter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -19,6 +20,7 @@ public final class FederatedIdentityAuthenticationSuccessHandler implements Auth
 
 	private Consumer<OAuth2User> oauth2UserHandler = (user) -> {};
 
+	@Setter
 	private Consumer<OidcUser> oidcUserHandler = (user) -> this.oauth2UserHandler.accept(user);
 
 	@Override
@@ -36,10 +38,6 @@ public final class FederatedIdentityAuthenticationSuccessHandler implements Auth
 
 	public void setOAuth2UserHandler(Consumer<OAuth2User> oauth2UserHandler) {
 		this.oauth2UserHandler = oauth2UserHandler;
-	}
-
-	public void setOidcUserHandler(Consumer<OidcUser> oidcUserHandler) {
-		this.oidcUserHandler = oidcUserHandler;
 	}
 
 }

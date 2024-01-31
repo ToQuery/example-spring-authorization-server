@@ -105,7 +105,6 @@ public class OAuth2ResourceOwnerPasswordAuthenticationProvider implements Authen
 			LOGGER.trace("Validated token request parameters");
 		}
 
-		// @formatter:off
 		DefaultOAuth2TokenContext.Builder tokenContextBuilder = DefaultOAuth2TokenContext.builder()
 				.registeredClient(registeredClient)
 				.principal(usernamePasswordAuthentication)
@@ -113,7 +112,6 @@ public class OAuth2ResourceOwnerPasswordAuthenticationProvider implements Authen
 				.authorizedScopes(authorizedScopes)
 				.authorizationGrantType(AuthorizationGrantType.PASSWORD)
 				.authorizationGrant(resouceOwnerPasswordAuthentication);
-		// @formatter:on
 
 		// ----- Access token -----
 		OAuth2TokenContext tokenContext = tokenContextBuilder.tokenType(OAuth2TokenType.ACCESS_TOKEN).build();
@@ -132,13 +130,12 @@ public class OAuth2ResourceOwnerPasswordAuthenticationProvider implements Authen
 				generatedAccessToken.getTokenValue(), generatedAccessToken.getIssuedAt(),
 				generatedAccessToken.getExpiresAt(), tokenContext.getAuthorizedScopes());
 
-		// @formatter:off
 		OAuth2Authorization.Builder authorizationBuilder = OAuth2Authorization.withRegisteredClient(registeredClient)
 				.principalName(usernamePasswordAuthentication.getName())
 				.authorizationGrantType(AuthorizationGrantType.PASSWORD)
 				.authorizedScopes(authorizedScopes)
 				.attribute(Principal.class.getName(), usernamePasswordAuthentication);
-		// @formatter:on
+		//
 		if (generatedAccessToken instanceof ClaimAccessor) {
 			authorizationBuilder.token(accessToken, (metadata) ->
 					metadata.put(OAuth2Authorization.Token.CLAIMS_METADATA_NAME, ((ClaimAccessor) generatedAccessToken).getClaims()));
@@ -171,12 +168,12 @@ public class OAuth2ResourceOwnerPasswordAuthenticationProvider implements Authen
 		// ----- ID token -----
 		OidcIdToken idToken;
 		if (requestedScopes.contains(OidcScopes.OPENID)) {
-			// @formatter:off
+
 			tokenContext = tokenContextBuilder
 					.tokenType(ID_TOKEN_TOKEN_TYPE)
 					.authorization(authorizationBuilder.build())	// ID token customizer may need access to the access token and/or refresh token
 					.build();
-			// @formatter:on
+
 			OAuth2Token generatedIdToken = this.tokenGenerator.generate(tokenContext);
 			if (!(generatedIdToken instanceof Jwt)) {
 				OAuth2Error error = new OAuth2Error(OAuth2ErrorCodes.SERVER_ERROR,

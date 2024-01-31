@@ -97,30 +97,32 @@ public class AuthorizationRegisteredClientConfig {
                 .id(UUID.randomUUID().toString())
                 .clientId("example-spring-security-oauth2-jwt")
                 .clientName("example-spring-security-oauth2-jwt")
-                .clientSecret("{noop}example-spring-security-oauth2-sso-jwt-secret")
+                .clientSecret("{noop}example-spring-security-oauth2-jwt-secret")
+                .redirectUri("http://example-spring-security-oauth2-jwt.local:8010/login/oauth2/code/example-spring-authorization-server")
                 .build();
 
         RegisteredClient ssoJwt1Client = RegisteredClient.from(defaultRegisteredClient)
                 .id(UUID.randomUUID().toString())
                 .clientId("example-spring-security-oauth2-jwt-1")
                 .clientName("example-spring-security-oauth2-jwt-1")
-                .clientSecret("{noop}example-spring-security-oauth2-sso-jwt-1-secret")
-                .redirectUri("http://example-spring-security-oauth2-jwt:8011/login/oauth2/code/toquery")
+                .clientSecret("{noop}example-spring-security-oauth2-jwt-1-secret")
+                .redirectUri("http://example-spring-security-oauth2-jwt:8011/login/oauth2/code/example-spring-authorization-server")
                 .build();
 
         RegisteredClient ssoJwt2Client = RegisteredClient.from(defaultRegisteredClient)
                 .id(UUID.randomUUID().toString())
                 .clientId("example-spring-security-oauth2-jwt-2")
                 .clientName("example-spring-security-oauth2-jwt-2")
-                .clientSecret("{noop}example-spring-security-oauth2-sso-jwt-2-secret")
-                .redirectUri("http://example-spring-security-oauth2-jwt:8021/login/oauth2/code/toquery")
+                .clientSecret("{noop}example-spring-security-oauth2-jwt-2-secret")
+                .redirectUri("http://example-spring-security-oauth2-jwt:8021/login/oauth2/code/example-spring-authorization-server")
                 .build();
 
         RegisteredClient ssoOpaqueTokenClient = RegisteredClient.from(defaultRegisteredClient)
                 .id(UUID.randomUUID().toString())
                 .clientId("example-spring-security-oauth2-opaque-token")
                 .clientName("example-spring-security-oauth2-opaque-token")
-                .clientSecret("{noop}example-spring-security-oauth2-sso-opaque-token-secret")
+                .clientSecret("{noop}example-spring-security-oauth2-opaque-token-secret")
+                .redirectUri("http://example-spring-security-oauth2-opaque-token.local:8010/login/oauth2/code/example-spring-authorization-server")
 //                .tokenSettings(
 //                        TokenSettings.builder()
 //                                // 使用透明方式，

@@ -23,9 +23,9 @@ https://juejin.cn/post/7290729997215170615?searchId=202401252330058987276A1F0FB3
 - jwt方式
 
 ```shell
-curl -s -X POST \
+curl -i -s -X POST \
  'http://localhost:9000/oauth2/token' \
-  -u 'example:example-secret' \
+  -u 'example-spring-security-multiple-authentication:example-spring-security-multiple-authentication-secret' \
   -d 'grant_type=client_credentials' \
   -d 'scope=write'
 ```
@@ -44,7 +44,7 @@ example-spring-security-oauth2-opaque-token:example-spring-security-oauth2-opaqu
 ```shell
 curl -i -X POST \
    -H "Authorization:Basic ZXhhbXBsZS1zcHJpbmctc2VjdXJpdHktb3BhcXVlOmV4YW1wbGUtc3ByaW5nLXNlY3VyaXR5LW9wYXF1ZS1zZWNyZXQ=" \
- 'http://localhost:8080/oauth2/token?grant_type=client_credentials'
+ 'http://localhost:9000/oauth2/token?grant_type=client_credentials'
 ```
 
 ```shell
@@ -77,13 +77,16 @@ example-spring-security-jwt:example-spring-security-jwt-secret
 
 1. 浏览器访问获取code
 
-http://localhost:8080/oauth2/authorize?response_type=code&scope=read%20write&client_id=example-spring-security-oauth2-sso-jwt&redirect_uri=http://127.0.0.1:8080/authorized
+http://localhost:9000/oauth2/authorize?response_type=code&scope=read%20write&client_id=example-spring-security-oauth2-jwt&redirect_uri=http://example-spring-security-oauth2-jwt.local:8010/login/oauth2/code/example-spring-authorization-server
 
 ```shell
 curl -i -X POST \
-   -H "Authorization:Basic ZXhhbXBsZS1zcHJpbmctc2VjdXJpdHktand0OmV4YW1wbGUtc3ByaW5nLXNlY3VyaXR5LWp3dC1zZWNyZXQ=" \
- 'http://localhost:8080/oauth2/token?grant_type=authorization_code&code=2cJEsyFuhTP-KtLBt8DDk-7khG4ayXV8JaGVmKBkiFpF-pMMgxC4mvCS6EIupcwVZcxREizYS-LmEVw6vfyv01Up_t93rflWLeCJ6iNNNy09oWCh1NhY_zCVhUD7cFp-&redirect_uri=http://127.0.0.1:8080/authorized'
-
+  -u 'example-spring-security-oauth2-jwt:example-spring-security-oauth2-jwt-secret' \
+  -d 'grant_type=authorization_code' \
+  -d 'code=S29xCRVd8rexKbLZpwVLWPVIwG3m9_hyH7I5n1zURgnyO_-vvmSOJTduj0Dwvl0pXOMEgrYMjkvIEKab_k3ceuNba7_BpGeNry-5H3liIU32uIe6vJ8xMu6I276tcxmo' \
+  -d 'redirect_uri=http://example-spring-security-oauth2-jwt.local:8010/login/oauth2/code/example-spring-authorization-server' \
+ 'http://localhost:9000/oauth2/token'
+ 
 ```
 
 得道响应信息：

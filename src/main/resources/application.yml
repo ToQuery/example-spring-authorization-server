@@ -70,35 +70,62 @@ spring:
     oauth2:
       authorizationserver:
         client:
-          oidc-client:
+          example:
+            require-authorization-consent: true
             registration:
-              client-id: "oidc-client"
-              client-secret: "{noop}secret"
+              client-id: example
+              client-name: example
+              client-secret: "{noop}example-secret"
               client-authentication-methods:
-                - "client_secret_basic"
+                - client_secret_basic
+                - client_secret_post
+                - client_secret_jwt
+                - private_key_jwt
+                - none
               authorization-grant-types:
-                - "authorization_code"
-                - "refresh_token"
+                - authorization_code
+                - refresh_token
+                - client_credentials
+                - password
+                - urn:ietf:params:oauth:grant-type:jwt-bearer
+                - urn:ietf:params:oauth:grant-type:device_code
               redirect-uris:
                 - "http://127.0.0.1:8080/login/oauth2/code/oidc-client"
               post-logout-redirect-uris:
                 - "http://127.0.0.1:8080/"
               scopes:
-                - "openid"
-                - "profile"
-            require-authorization-consent: true
+                - openid
+                - profile
+                - email
+                - address
+                - phone
+                - read
+                - write
+            token:
+              access-token-time-to-live: 1h
+              refresh-token-time-to-live: 1h
 
       client:
+        registration:
+          google:
+            provider: google
+            client-name: Sign in with Google
+            client-id: ${OAUTH_GOOGLE_CLIENT_ID}
+            client-secret: ${OAUTH_GOOGLE_CLIENT_SECRET}
+            scope:
+              - openid
+          github:
+            provider: github
+            client-name: Sign in with GitHub
+            client-id: ${OAUTH_GITHUB_CLIENT_ID}
+            client-secret: ${OAUTH_GITHUB_CLIENT_SECRET}
+            scope:
+              - user:email
+              - read:user
         provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
           github:
             user-name-attribute: login
-        registration:
-          github-idp:
-            client-id: ${OAUTH_GITHUB_CLIENT_ID}
-            client-name: Sign in with GitHub
-            client-secret: ${OAUTH_GITHUB_CLIENT_SECRET}
-            provider: github
-            scope:
-            - user:email
-            - read:user
-

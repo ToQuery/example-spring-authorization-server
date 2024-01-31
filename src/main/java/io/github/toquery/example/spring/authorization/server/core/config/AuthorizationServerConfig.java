@@ -11,6 +11,8 @@ import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import io.github.toquery.example.spring.authorization.server.core.oauth2.authentication.OAuth2ResourceOwnerPasswordAuthenticationConverter;
 import io.github.toquery.example.spring.authorization.server.core.oauth2.authentication.OAuth2ResourceOwnerPasswordAuthenticationProvider;
+import io.github.toquery.example.spring.authorization.server.core.oauth2.federated.identity.FederatedIdentityConfigurer;
+import io.github.toquery.example.spring.authorization.server.core.oauth2.federated.identity.UserRepositoryOAuth2UserHandler;
 import io.github.toquery.example.spring.authorization.server.core.properties.AppJwtProperties;
 import io.github.toquery.example.spring.authorization.server.core.utils.OAuth2ConfigurerUtils;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,8 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.OAuth2Token;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
@@ -41,9 +45,11 @@ import org.springframework.security.oauth2.server.authorization.web.authenticati
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2RefreshTokenAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationConverter;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author ToQuery
@@ -70,22 +76,24 @@ public class AuthorizationServerConfig {
         // 获取默认设置项
         OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = http.getConfigurer(OAuth2AuthorizationServerConfigurer.class);
 
-        // Enable OpenID Connect 1.0
-        authorizationServerConfigurer.oidc(Customizer.withDefaults());
-
-        // 自定义 token 接口，支持 password 方式获取token
-        authorizationServerConfigurer.tokenEndpoint((tokenEndpoint) -> {
-            // 委托模式认证转换器
-            AuthenticationConverter authenticationConverter = new DelegatingAuthenticationConverter(Arrays.asList(
-                    new OAuth2AuthorizationCodeAuthenticationConverter(),
-                    new OAuth2RefreshTokenAuthenticationConverter(),
-                    new OAuth2ClientCredentialsAuthenticationConverter(),
-                    new OAuth2ResourceOwnerPasswordAuthenticationConverter()));
-            tokenEndpoint.accessTokenRequestConverter(authenticationConverter);
-        });
-
         // 应用 OAuth2AuthorizationServer 配置
-        // http.apply(authorizationServerConfigurer);
+         http.with(authorizationServerConfigurer, (authorizationServer) -> {
+             // 自定义 token 接口，支持 password 方式获取token
+             authorizationServer.tokenEndpoint((tokenEndpoint) -> {
+                 List<AuthenticationConverter> converters = Arrays.asList(
+                         new OAuth2AuthorizationCodeAuthenticationConverter(),
+                         new OAuth2RefreshTokenAuthenticationConverter(),
+                         new OAuth2ClientCredentialsAuthenticationConverter(),
+                         new OAuth2ResourceOwnerPasswordAuthenticationConverter());
+                 // 委托模式认证转换器
+                 AuthenticationConverter authenticationConverter = new DelegatingAuthenticationConverter(converters);
+                 tokenEndpoint.accessTokenRequestConverter(authenticationConverter);
+             });
+
+             // Enable OpenID Connect 1.0
+             authorizationServer.oidc(Customizer.withDefaults());
+
+         });
 
         http.cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(exchange -> corsConfiguration));
 
@@ -93,9 +101,13 @@ public class AuthorizationServerConfig {
             httpSecurityHeadersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable);
         });
 
-//        SSO 集成github Google 账号使用
-//        FederatedIdentityConfigurer federatedIdentityConfigurer = new FederatedIdentityConfigurer();
-//        http.apply(federatedIdentityConfigurer);
+//        SSO 集成 github Google 账号使用
+        FederatedIdentityConfigurer federatedIdentityConfigurer = new FederatedIdentityConfigurer();
+        http.with(federatedIdentityConfigurer, (federatedIdentity) -> {
+            federatedIdentity.loginPageUrl("/login");
+            federatedIdentity.authorizationRequestUri("/oauth2/authorization/{registrationId}");
+            federatedIdentity.oauth2UserHandler(new UserRepositoryOAuth2UserHandler());
+        });
 
 
         // 获取用户信息 Accept access tokens for User Info and/or Client Registration
@@ -103,9 +115,9 @@ public class AuthorizationServerConfig {
 
         // Redirect to the login page when not authenticated from the
         // authorization endpoint
-//        http.exceptionHandling((exceptionHandlingConfigurer) -> {
-//            exceptionHandlingConfigurer.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"));
-//        });
+        http.exceptionHandling((exceptionHandlingConfigurer) -> {
+            exceptionHandlingConfigurer.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"));
+        });
 
 
         SecurityFilterChain securityFilterChain = http.formLogin(Customizer.withDefaults()).build();
@@ -132,7 +144,6 @@ public class AuthorizationServerConfig {
         httpSecurity.authenticationProvider(resourceOwnerPasswordAuthenticationProvider);
 
     }
-
 
     @Bean
     public OAuth2AuthorizationService authorizationService() {

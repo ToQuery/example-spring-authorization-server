@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -56,6 +57,7 @@ public class SecurityConfig {
         // Form login handles the redirect to the login page from the
         // authorization server filter chain
         http.formLogin(Customizer.withDefaults());
+
 //        http.formLogin(httpSecurityFormLoginConfigurer -> {
 //            httpSecurityFormLoginConfigurer.loginPage("/login").failureUrl("/login-error").permitAll();
 //        });
@@ -70,6 +72,12 @@ public class SecurityConfig {
 //        });
 
 //        http.apply(federatedIdentityConfigurer);
+
+        http.oauth2Login(oauth2LoginConfigurer -> {
+//            oauth2LoginConfigurer.successHandler(new SocialLoginAuthenticationSuccessHandler());
+        });
+
+        http.logout(LogoutConfigurer::permitAll);
 
         return http.build();
     }
