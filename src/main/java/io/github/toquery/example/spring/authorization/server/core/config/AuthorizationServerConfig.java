@@ -20,6 +20,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -46,6 +47,7 @@ import org.springframework.security.oauth2.server.authorization.web.authenticati
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationConverter;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.Arrays;
@@ -79,23 +81,25 @@ public class AuthorizationServerConfig {
         // 应用 OAuth2AuthorizationServer 配置
          http.with(authorizationServerConfigurer, (authorizationServer) -> {
              // 自定义 token 接口，支持 password 方式获取token
-             authorizationServer.tokenEndpoint((tokenEndpoint) -> {
-                 List<AuthenticationConverter> converters = Arrays.asList(
-                         new OAuth2AuthorizationCodeAuthenticationConverter(),
-                         new OAuth2RefreshTokenAuthenticationConverter(),
-                         new OAuth2ClientCredentialsAuthenticationConverter(),
-                         new OAuth2ResourceOwnerPasswordAuthenticationConverter());
-                 // 委托模式认证转换器
-                 AuthenticationConverter authenticationConverter = new DelegatingAuthenticationConverter(converters);
-                 tokenEndpoint.accessTokenRequestConverter(authenticationConverter);
-             });
+//             authorizationServer.tokenEndpoint((tokenEndpoint) -> {
+//                 List<AuthenticationConverter> converters = Arrays.asList(
+//                         new OAuth2AuthorizationCodeAuthenticationConverter(),
+//                         new OAuth2RefreshTokenAuthenticationConverter(),
+//                         new OAuth2ClientCredentialsAuthenticationConverter(),
+//                         new OAuth2ResourceOwnerPasswordAuthenticationConverter());
+//                 // 委托模式认证转换器
+//                 AuthenticationConverter authenticationConverter = new DelegatingAuthenticationConverter(converters);
+//                 tokenEndpoint.accessTokenRequestConverter(authenticationConverter);
+//             });
 
              // Enable OpenID Connect 1.0
              authorizationServer.oidc(Customizer.withDefaults());
 
          });
 
-        http.cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(exchange -> corsConfiguration));
+        http.cors(httpSecurityCorsConfigurer -> {
+            httpSecurityCorsConfigurer.configurationSource(request -> corsConfiguration);
+        });
 
         http.headers(httpSecurityHeadersConfigurer -> {
             httpSecurityHeadersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable);
@@ -116,7 +120,9 @@ public class AuthorizationServerConfig {
         // Redirect to the login page when not authenticated from the
         // authorization endpoint
         http.exceptionHandling((exceptionHandlingConfigurer) -> {
-            exceptionHandlingConfigurer.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"));
+            exceptionHandlingConfigurer.defaultAuthenticationEntryPointFor(
+                    new LoginUrlAuthenticationEntryPoint("/login"),
+                    new MediaTypeRequestMatcher(MediaType.TEXT_HTML));
         });
 
 
@@ -127,7 +133,7 @@ public class AuthorizationServerConfig {
          * Custom configuration for Resource Owner Password grant type. Current implementation has no support for Resource Owner
          * Password grant type
          */
-        addCustomOAuth2ResourceOwnerPasswordAuthenticationProvider(http);
+//        addCustomOAuth2ResourceOwnerPasswordAuthenticationProvider(http);
 
         return securityFilterChain;
     }

@@ -3,6 +3,7 @@ package io.github.toquery.example.spring.authorization.server.core.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
@@ -37,18 +38,17 @@ public class SecurityConfig {
 
 
     @Bean
+    @Order(2)
     public SecurityFilterChain defaultSecurityFilterChain(
             HttpSecurity http,
             CorsConfiguration corsConfiguration
             ) throws Exception {
 
-//        FederatedIdentityConfigurer federatedIdentityConfigurer = new FederatedIdentityConfigurer().oauth2UserHandler(new UserRepositoryOAuth2UserHandler());
-
-        http.cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(exchange -> corsConfiguration));
+        http.cors(Customizer.withDefaults());
         http.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
             // 白名单
-            authorizationManagerRequestMatcherRegistry.requestMatchers("/", "/error").permitAll();
-            authorizationManagerRequestMatcherRegistry.requestMatchers("/actuator", "/actuator/*").permitAll();
+//            authorizationManagerRequestMatcherRegistry.requestMatchers("/", "/error").permitAll();
+//            authorizationManagerRequestMatcherRegistry.requestMatchers("/actuator", "/actuator/*").permitAll();
 
             authorizationManagerRequestMatcherRegistry.anyRequest().authenticated();
         });

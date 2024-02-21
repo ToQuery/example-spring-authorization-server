@@ -147,6 +147,35 @@ public class AuthorizationRegisteredClientConfig {
                 .redirectUri("http://example-spring-security-multiple-authentication.local:8010/login/oauth2/code/example-spring-authorization-server")
                 .build();
 
+        RegisteredClient exampleReactOAuth2AuthorizationCodePKCE = RegisteredClient.from(defaultRegisteredClient)
+                .id(UUID.randomUUID().toString())
+                .clientId("example-react-oauth2-authorization-code-pkce")
+                .clientName("example-react-oauth2-authorization-code-pkce")
+                .clientSecret("{noop}example-react-oauth2-authorization-code-pkce-secret")
+                .redirectUri("http://example-react-oauth2-authorization-code-pkce.local:5173/")
+                .redirectUri("http://127.0.0.1:5173/")
+                .build();
+
+        RegisteredClient exampleVueOAuth2AuthorizationCodePKCE = RegisteredClient.from(defaultRegisteredClient)
+                .id(UUID.randomUUID().toString())
+                .clientId("example-vue-oauth2-authorization-code-pkce")
+                .clientName("example-vue-oauth2-authorization-code-pkce")
+                .clientSecret("{noop}example-vue-oauth2-authorization-code-pkce-secret")
+                .redirectUri("http://example-vue-oauth2-authorization-code-pkce.local:5173/")
+                .redirectUri("http://127.0.0.1:5173/")
+                .build();
+
+        RegisteredClient exampleAngularOAuth2AuthorizationCodePKCE = RegisteredClient.from(defaultRegisteredClient)
+                .id(UUID.randomUUID().toString())
+                .clientId("example-angular-oauth2-authorization-code-pkce")
+                .clientName("example-angular-oauth2-authorization-code-pkce")
+                .clientSecret("{noop}example-angular-oauth2-authorization-code-pkce-secret")
+                .redirectUri("http://example-angular-oauth2-authorization-code-pkce.local:4200/signin-callback")
+                .redirectUri("http://127.0.0.1:4200/signin-callback")
+                .redirectUri("http://example-angular-oauth2-authorization-code-pkce.local:4200/signin-callback.html")
+                .redirectUri("http://127.0.0.1:4200/signin-callback.html")
+                .build();
+
         return new InMemoryRegisteredClientRepository(
                 example,
                 jwtClient,
@@ -154,7 +183,10 @@ public class AuthorizationRegisteredClientConfig {
                 ssoJwt1Client,
                 ssoJwt2Client,
                 ssoOpaqueTokenClient,
-                exampleSpringSecurityMultipleAuthentication
+                exampleSpringSecurityMultipleAuthentication,
+                exampleReactOAuth2AuthorizationCodePKCE,
+                exampleVueOAuth2AuthorizationCodePKCE,
+                exampleAngularOAuth2AuthorizationCodePKCE
         );
 
     }

@@ -44,9 +44,6 @@ management:
       application: ${spring.application.name}
 
 spring:
-  docker:
-    compose:
-      enabled: false
   application:
     name: example-spring-authorization-server
 #  profiles:
