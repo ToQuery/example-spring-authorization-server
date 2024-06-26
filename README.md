@@ -107,3 +107,9 @@ curl -i -X GET \
 ## 问题
 
 - https://stackoverflow.com/questions/39756748/spring-oauth-authorization-server-requires-scope
+
+## 踩坑
+
+1. 基于OAuth2.x协议接入应用。无法获取 jwt token
+2. 基于OIDC协议接入应用。利用 SimpleUrlAuthenticationSuccessHandler 可以返回给前端idtoken，虽然 登录成功后可以获取用户信息，但请求接口时，由于是jwt token ，并没有用户信息,虽然可以调用用户信息接口获取但很影响性能。
+3. 利用 SimpleUrlAuthenticationSuccessHandler 生成自定义 token，存在两个问题，一个是业务应用生成的token不通用，password方式生成的token就会验证失败；二是利用授权服务的公私钥接口生成，但会暴露公私钥。
