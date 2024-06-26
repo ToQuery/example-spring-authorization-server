@@ -1,0 +1,9 @@
+spring:
+  h2:
+    console:
+      enabled: true
+      settings:
+        trace: true
+        web-allow-others: true
+        web-admin-password: 123456
+

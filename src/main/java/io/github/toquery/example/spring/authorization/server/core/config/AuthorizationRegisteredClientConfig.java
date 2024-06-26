@@ -10,7 +10,6 @@ import org.springframework.security.oauth2.server.authorization.client.InMemoryR
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
-import org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 
 import java.time.Duration;
@@ -61,7 +60,8 @@ public class AuthorizationRegisteredClientConfig {
             .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
             .authorizationGrantType(AuthorizationGrantType.PASSWORD)
             .authorizationGrantType(AuthorizationGrantType.JWT_BEARER)
-            .redirectUri("http://127.0.0.1:8010/login/oauth2/code/toquery")
+            .authorizationGrantType(AuthorizationGrantType.DEVICE_CODE)
+            .redirectUri("http://127.0.0.1:8010/login/oauth2/code/example-spring-authorization-server")
             .scope(OidcScopes.OPENID)
             .scope(OidcScopes.PROFILE)
             .scope(OidcScopes.EMAIL)
@@ -92,57 +92,42 @@ public class AuthorizationRegisteredClientConfig {
                 .clientSecret("{noop}example-spring-security-jwt-secret")
                 .build();
 
-        RegisteredClient jweClient = RegisteredClient.from(defaultRegisteredClient)
-                .id(UUID.randomUUID().toString())
-                .clientId("example-spring-security-opaque")
-                .clientName("example-spring-security-opaque")
-                .clientSecret("{noop}example-spring-security-opaque-secret")
-//                .tokenSettings(
-//                        TokenSettings.builder()
-//                                //使用透明方式，
-//                                // 默认是 OAuth2TokenFormat SELF_CONTAINED  全的jwt token
-//                                // REFERENCE 是引用方式，即使用jwt token，但是jwt token是通过oauth2 server生成的，而不是通过oauth2 client生成的
-//                                .accessTokenFormat(OAuth2TokenFormat.REFERENCE)
-//                                // 授权码的有效期
-//                                .accessTokenTimeToLive(Duration.ofHours(1))
-//                                // 刷新token的有效期
-//                                .refreshTokenTimeToLive(Duration.ofDays(3))
-//                                .reuseRefreshTokens(true)
-//                                .build()
-//                )
-                .build();
-
 
         RegisteredClient ssoJwtClient = RegisteredClient.from(defaultRegisteredClient)
                 .id(UUID.randomUUID().toString())
-                .clientId("example-spring-security-oauth2-sso-jwt")
-                .clientName("example-spring-security-oauth2-sso-jwt")
-                .clientSecret("{noop}example-spring-security-oauth2-sso-jwt-secret")
+                .clientId("example-spring-security-oauth2-jwt")
+                .clientName("example-spring-security-oauth2-jwt")
+                .clientSecret("{noop}example-spring-security-oauth2-jwt-secret")
+                .redirectUri("http://example-spring-security-oauth2-jwt.local:8010/login/oauth2/code/example-spring-authorization-server")
                 .build();
 
         RegisteredClient ssoJwt1Client = RegisteredClient.from(defaultRegisteredClient)
                 .id(UUID.randomUUID().toString())
-                .clientId("example-spring-security-oauth2-sso-jwt-1")
-                .clientName("example-spring-security-oauth2-sso-jwt-1")
-                .clientSecret("{noop}example-spring-security-oauth2-sso-jwt-1-secret")
-                .redirectUri("http://127.0.0.1:8011/login/oauth2/code/toquery")
+                .clientId("example-spring-security-oauth2-jwt-1")
+                .clientName("example-spring-security-oauth2-jwt-1")
+                .clientSecret("{noop}example-spring-security-oauth2-jwt-1-secret")
+                .redirectUri("http://example-spring-security-oauth2-jwt:8011/login/oauth2/code/example-spring-authorization-server")
                 .build();
 
         RegisteredClient ssoJwt2Client = RegisteredClient.from(defaultRegisteredClient)
                 .id(UUID.randomUUID().toString())
-                .clientId("example-spring-security-oauth2-sso-jwt-2")
-                .clientName("example-spring-security-oauth2-sso-jwt-2")
-                .clientSecret("{noop}example-spring-security-oauth2-sso-jwt-2-secret")
-                .redirectUri("http://127.0.0.1:8021/login/oauth2/code/toquery")
+                .clientId("example-spring-security-oauth2-jwt-2")
+                .clientName("example-spring-security-oauth2-jwt-2")
+                .clientSecret("{noop}example-spring-security-oauth2-jwt-2-secret")
+                .redirectUri("http://example-spring-security-oauth2-jwt:8021/login/oauth2/code/example-spring-authorization-server")
                 .build();
 
         RegisteredClient ssoOpaqueTokenClient = RegisteredClient.from(defaultRegisteredClient)
                 .id(UUID.randomUUID().toString())
-                .clientId("example-spring-security-oauth2-sso-opaque-token")
-                .clientName("example-spring-security-oauth2-sso-opaque-token")
-                .clientSecret("{noop}example-spring-security-oauth2-sso-opaque-token-secret")
+                .clientId("example-spring-security-oauth2-opaque-token")
+                .clientName("example-spring-security-oauth2-opaque-token")
+                .clientSecret("{noop}example-spring-security-oauth2-opaque-token-secret")
+                .redirectUri("http://example-spring-security-oauth2-opaque-token.local:8010/login/oauth2/code/example-spring-authorization-server")
 //                .tokenSettings(
 //                        TokenSettings.builder()
+//                                // 使用透明方式，
+//                                // 默认是 OAuth2TokenFormat SELF_CONTAINED  全的jwt token
+//                                // REFERENCE 是引用方式，即使用jwt token，但是jwt token是通过oauth2 server生成的，而不是通过oauth2 client生成的
 //                                .accessTokenFormat(OAuth2TokenFormat.REFERENCE)
 //                                // access_token 有效期
 //                                .accessTokenTimeToLive(Duration.ofHours(6))
@@ -154,7 +139,55 @@ public class AuthorizationRegisteredClientConfig {
 //                )
                 .build();
 
-        return new InMemoryRegisteredClientRepository(example, jwtClient, jweClient, ssoJwtClient, ssoJwt1Client, ssoJwt2Client, ssoOpaqueTokenClient);
+        RegisteredClient exampleSpringSecurityMultipleAuthentication = RegisteredClient.from(defaultRegisteredClient)
+                .id(UUID.randomUUID().toString())
+                .clientId("example-spring-security-multiple-authentication")
+                .clientName("example-spring-security-multiple-authentication")
+                .clientSecret("{noop}example-spring-security-multiple-authentication-secret")
+                .redirectUri("http://example-spring-security-multiple-authentication.local:8010/login/oauth2/code/example-spring-authorization-server")
+                .build();
+
+        RegisteredClient exampleReactOAuth2AuthorizationCodePKCE = RegisteredClient.from(defaultRegisteredClient)
+                .id(UUID.randomUUID().toString())
+                .clientId("example-react-oauth2-authorization-code-pkce")
+                .clientName("example-react-oauth2-authorization-code-pkce")
+                .clientSecret("{noop}example-react-oauth2-authorization-code-pkce-secret")
+                .redirectUri("http://example-react-oauth2-authorization-code-pkce.local:5173/")
+                .redirectUri("http://127.0.0.1:5173/")
+                .build();
+
+        RegisteredClient exampleVueOAuth2AuthorizationCodePKCE = RegisteredClient.from(defaultRegisteredClient)
+                .id(UUID.randomUUID().toString())
+                .clientId("example-vue-oauth2-authorization-code-pkce")
+                .clientName("example-vue-oauth2-authorization-code-pkce")
+                .clientSecret("{noop}example-vue-oauth2-authorization-code-pkce-secret")
+                .redirectUri("http://example-vue-oauth2-authorization-code-pkce.local:5173/")
+                .redirectUri("http://127.0.0.1:5173/")
+                .build();
+
+        RegisteredClient exampleAngularOAuth2AuthorizationCodePKCE = RegisteredClient.from(defaultRegisteredClient)
+                .id(UUID.randomUUID().toString())
+                .clientId("example-angular-oauth2-authorization-code-pkce")
+                .clientName("example-angular-oauth2-authorization-code-pkce")
+                .clientSecret("{noop}example-angular-oauth2-authorization-code-pkce-secret")
+                .redirectUri("http://example-angular-oauth2-authorization-code-pkce.local:4200/signin-callback")
+                .redirectUri("http://127.0.0.1:4200/signin-callback")
+                .redirectUri("http://example-angular-oauth2-authorization-code-pkce.local:4200/signin-callback.html")
+                .redirectUri("http://127.0.0.1:4200/signin-callback.html")
+                .build();
+
+        return new InMemoryRegisteredClientRepository(
+                example,
+                jwtClient,
+                ssoJwtClient,
+                ssoJwt1Client,
+                ssoJwt2Client,
+                ssoOpaqueTokenClient,
+                exampleSpringSecurityMultipleAuthentication,
+                exampleReactOAuth2AuthorizationCodePKCE,
+                exampleVueOAuth2AuthorizationCodePKCE,
+                exampleAngularOAuth2AuthorizationCodePKCE
+        );
 
     }
 }

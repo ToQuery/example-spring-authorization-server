@@ -61,7 +61,6 @@ public final class FederatedIdentityConfigurer extends AbstractHttpConfigurer<Fe
 		return this;
 	}
 
-	// @formatter:off
 	@Override
 	public void init(HttpSecurity http) throws Exception {
 		ApplicationContext applicationContext = http.getSharedObject(ApplicationContext.class);
